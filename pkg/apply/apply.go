@@ -60,6 +60,7 @@ type Plan struct {
 type Apply interface {
 	Apply(set *objectset.ObjectSet) error
 	ApplyObjects(objs ...runtime.Object) error
+	DeleteDependents(obj runtime.Object) error
 	WithContext(ctx context.Context) Apply
 	WithCacheTypes(igs ...InformerGetter) Apply
 	WithCacheTypeFactory(factory InformerFactory) Apply
@@ -210,6 +211,10 @@ func (a *apply) ApplyObjects(objs ...runtime.Object) error {
 	os := objectset.NewObjectSet()
 	os.Add(objs...)
 	return a.newDesiredSet().Apply(os)
+}
+
+func (a *apply) DeleteDependents(obj runtime.Object) error {
+	return a.newDesiredSet().DeleteDependents(obj)
 }
 
 func (a *apply) WithSetID(id string) Apply {

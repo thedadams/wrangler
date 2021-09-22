@@ -79,6 +79,10 @@ func (o desiredSet) ApplyObjects(objs ...runtime.Object) error {
 	return o.Apply(os)
 }
 
+func (o desiredSet) DeleteDependents(obj runtime.Object) error {
+	return o.WithOwner(obj).ApplyObjects()
+}
+
 func (o desiredSet) WithDiffPatch(gvk schema.GroupVersionKind, namespace, name string, patch []byte) Apply {
 	patches := map[patchKey][][]byte{}
 	for k, v := range o.diffPatches {
